@@ -1,13 +1,13 @@
 import tensorflow as tf
-import data_initializer as di
+from data_initializer import DataInitializer
 
 N_INPUT = 3136
 N_CLASSES = 33
 CNN_DROPOUT = 0.75
 
 learning_rate = 0.001
-training_iters = 200000
-batch_size = 128
+training_iters = 200
+batch_size = 10
 display_step = 10
 
 DIR = "../data/categories"
@@ -55,10 +55,19 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-data = di.get_data()
+data_init = DataInitializer()
+for k in range(0, training_iters):
+	# print "next batch"
+	batch = data_init.next_batch(batch_size)
+	# for i in batch:
+	# 	for j, t in enumerate(i):
+	# 		if t > 0.0:
+	# 			print j
+	# 			break
 
-init = tf.initialize_all_variables()
-saver = tf.train.Saver()
 
+# init = tf.initialize_all_variables()
+# saver = tf.train.Saver()
+#
 # with tf.Session() as sess:
 # 	sess.run(init)

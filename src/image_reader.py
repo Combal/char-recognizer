@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import math
 from scipy import ndimage
+import copy
 
 FILE = "../data/char.jpg"
 MOD_FILE = "../data/char-mod.jpg"
@@ -39,24 +40,28 @@ def read_and_transform(image_path=FILE):
 	# invert colors and resize to 28x28
 	# img = cv2.resize(255 - img, (28, 28))
 	img = 255 - img
-
 	# leave only 0-s and 255-s
-	(thresh, img) = cv2.threshold(img, 127, 255, cv2.THRESH_OTSU)
+	(thresh, img) = cv2.threshold(img, 1, 255, cv2.THRESH_BINARY)
 	# img[img < 10] = 0
 	# blur = cv2.GaussianBlur(img, (5, 5), 0)
 	# (ret3, img) = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
 
-	while np.sum(img[0]) == 0:
-		img = img[1:]
-
-	while np.sum(img[:, 0]) == 0:
-		img = np.delete(img, 0, 1)
-
-	while np.sum(img[-1]) == 0:
-		img = img[:-1]
-
-	while np.sum(img[:, -1]) == 0:
-		img = np.delete(img, -1, 1)
+	img2 = copy.copy(img)
+	contours, hierarchy = cv2.findContours(img2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+	x, y, w, h = cv2.boundingRect(contours[0])
+	del img2
+	img = img[y:y + h, x:x + w]
+	# while np.sum(img[0]) == 0:
+	# 	img = img[1:]
+	#
+	# while np.sum(img[:, 0]) == 0:
+	# 	img = np.delete(img, 0, 1)
+	#
+	# while np.sum(img[-1]) == 0:
+	# 	img = img[:-1]
+	#
+	# while np.sum(img[:, -1]) == 0:
+	# 	img = np.delete(img, -1, 1)
 
 	rows, cols = img.shape
 
@@ -76,6 +81,7 @@ def read_and_transform(image_path=FILE):
 	rows_padding = (int(math.ceil((50 - rows) / 2.0)), int(math.floor((50 - rows) / 2.0)))
 	img = np.lib.pad(img, (rows_padding, cols_padding), 'constant')
 
+	# cv2.imwrite(MOD_FILE, img)
 	# shiftx, shifty = get_best_shift(img)
 	# shifted = shift(img, shiftx, shifty)
 	# img = shifted
