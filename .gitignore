@@ -24,3 +24,4 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/data/categories/
