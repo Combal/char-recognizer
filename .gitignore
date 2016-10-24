@@ -24,4 +24,5 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
-/data/categories/
+/data/train_images/
+/data/test_images/

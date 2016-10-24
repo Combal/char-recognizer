@@ -1,16 +1,17 @@
 import tensorflow as tf
-from data_initializer import DataInitializer
+import vnist
 
 N_INPUT = 3136
 N_CLASSES = 33
 CNN_DROPOUT = 0.75
 
 learning_rate = 0.001
-training_iters = 200
-batch_size = 10
+training_iters = 30000
+batch_size = 128
 display_step = 10
 
-DIR = "../data/categories"
+DIR = "../data"
+MODEL_PATH = "../data/conv_model.ckpt"
 
 weights = {
 	'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
@@ -55,19 +56,32 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, y))
 optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
-data_init = DataInitializer()
-for k in range(0, training_iters):
-	# print "next batch"
-	batch = data_init.next_batch(batch_size)
-	# for i in batch:
-	# 	for j, t in enumerate(i):
-	# 		if t > 0.0:
-	# 			print j
-	# 			break
+vnist = vnist.read_data_sets(DIR)
 
+init = tf.initialize_all_variables()
+saver = tf.train.Saver()
 
-# init = tf.initialize_all_variables()
-# saver = tf.train.Saver()
-#
-# with tf.Session() as sess:
-# 	sess.run(init)
+with tf.Session() as sess:
+	sess.run(init)
+	step = 1
+	while step * batch_size < training_iters:
+		batch_x, batch_y = vnist.train.next_batch(batch_size)
+		batch_x = batch_x.reshape([-1, 56, 56, 1])
+		sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: CNN_DROPOUT})
+		if step % display_step == 0:
+			loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
+			print "Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
+				"{:.6f}".format(loss) + ", Training Accuracy= " + \
+				"{:.5f}".format(acc)
+		step += 1
+	print "Optimization Finished!"
+	save_path = saver.save(sess, MODEL_PATH)
+	print "Model saved in file: %s" % save_path
+
+	print "Testing Accuracy:", \
+		sess.run(accuracy, feed_dict={
+			x: vnist.test.images[:256].reshape([-1, 56, 56, 1]),
+			y: vnist.test.labels[:256],
+			keep_prob: 1.
+		})
+
