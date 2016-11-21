@@ -6,6 +6,7 @@ import numpy as np
 from tensorflow.contrib.learn.python.learn.datasets import base
 
 VALIDATION_RATE = 0.15
+TEST_RATE = 0.15
 
 
 def list_eye(n):
@@ -13,6 +14,7 @@ def list_eye(n):
 
 
 y = list_eye(33)
+# labels_string = "ად"
 labels_string = "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ"
 
 
@@ -30,8 +32,12 @@ def read_data_sets(train_dir):
 	validation_labels = train_labels[:validation_size]
 	train_images = train_images[validation_size:]
 	train_labels = train_labels[validation_size:]
-
-	test_images, test_labels = read_from_folder(os.path.join(train_dir, "test_images"))
+	test_size = int(round(len(train_images) * TEST_RATE))
+	test_images = train_images[:test_size]
+	test_labels = train_labels[:test_size]
+	train_images = train_images[test_size:]
+	train_labels = train_labels[test_size:]
+	# test_images, test_labels = read_from_folder(os.path.join(train_dir, "test_images"))
 
 	train = DataSet(train_images, train_labels)
 	validation = DataSet(validation_images, validation_labels)
@@ -56,8 +62,12 @@ def read_from_folder(folder):
 			image_path = os.path.join(label_dir, image)
 			# print image_path
 			image_rec = ir.read_and_transform(image_path)
+			if image_rec is None:
+				continue
 			images.append(image_rec)
 			labels.append(get_label_vector(label))
+		# print label
+		# print get_label_vector(label)
 		# self._data.append((image_rec, label, self.get_label_vector(label)))
 	images = np.array(images)
 	labels = np.array(labels)

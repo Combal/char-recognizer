@@ -6,7 +6,9 @@ import sys
 
 FILE = "../data/char.jpg"
 MOD_FILE = "../data/char-mod.jpg"
-N_INPUT = 3136
+IMAGE_SIZE = 56
+N_INPUT = IMAGE_SIZE * IMAGE_SIZE
+IMAGE_PADDING = int(round(IMAGE_SIZE * 0.2))
 
 
 def get_global_bounding_rect(contours):
@@ -53,20 +55,24 @@ def read_and_transform(image_path=FILE):
 
 	rows, cols = img.shape
 
+	if rows == 0:
+		print "skipping image %s" % image_path
+		return None
+
 	if rows > cols:
-		factor = 46.0 / rows
-		rows = 46
+		factor = (IMAGE_SIZE - IMAGE_PADDING) / (rows * 1.0)
+		rows = IMAGE_SIZE - IMAGE_PADDING
 		cols = int(round(cols * factor))
 		# first cols than rows
 		img = cv2.resize(img, (cols, rows))
 	else:
-		factor = 46.0 / cols
-		cols = 46
+		factor = (IMAGE_SIZE - IMAGE_PADDING) / (cols * 1.0)
+		cols = IMAGE_SIZE - IMAGE_PADDING
 		rows = int(round(rows * factor))
 		# first cols than rows
 		img = cv2.resize(img, (cols, rows))
-	cols_padding = (int(math.ceil((56 - cols) / 2.0)), int(math.floor((56 - cols) / 2.0)))
-	rows_padding = (int(math.ceil((56 - rows) / 2.0)), int(math.floor((56 - rows) / 2.0)))
+	cols_padding = (int(math.ceil((IMAGE_SIZE - cols) / 2.0)), int(math.floor((IMAGE_SIZE - cols) / 2.0)))
+	rows_padding = (int(math.ceil((IMAGE_SIZE - rows) / 2.0)), int(math.floor((IMAGE_SIZE - rows) / 2.0)))
 	img = np.lib.pad(img, (rows_padding, cols_padding), 'constant')
 
 	# cv2.imwrite(MOD_FILE, img)
