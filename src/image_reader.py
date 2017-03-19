@@ -4,8 +4,8 @@ import math
 import copy
 import sys
 
-FILE = "../data/char.jpg"
-MOD_FILE = "../data/char-mod.jpg"
+FILE = "data/char.jpg"
+MOD_FILE = "data/char-mod.jpg"
 IMAGE_SIZE = 56
 N_INPUT = IMAGE_SIZE * IMAGE_SIZE
 IMAGE_PADDING = int(round(IMAGE_SIZE * 0.2))

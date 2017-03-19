@@ -14,7 +14,7 @@ def list_eye(n):
 
 
 y = list_eye(33)
-# labels_string = "ად"
+# labels_string = "აბგ"
 labels_string = "აბგდევზთიკლმნოპჟრსტუფქღყშჩცძწჭხჯჰ"
 
 
