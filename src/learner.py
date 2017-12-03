@@ -1,6 +1,6 @@
 import tensorflow as tf
 import vnist
-import image_reader as ir
+import src.image_reader as ir
 
 N_CLASSES = 33
 CNN_DROPOUT = 0.7
@@ -14,19 +14,19 @@ DIR = "../data"
 MODEL_PATH = "../data/conv_model.ckpt"
 
 weights = {
-	'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
-	'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
-	'wd1': tf.Variable(tf.random_normal([ir.N_INPUT * 4, 2048])),
-	'wd2': tf.Variable(tf.random_normal([2048, 1024])),
-	'out': tf.Variable(tf.random_normal([1024, N_CLASSES]))
+    'wc1': tf.Variable(tf.random_normal([5, 5, 1, 32])),
+    'wc2': tf.Variable(tf.random_normal([5, 5, 32, 64])),
+    'wd1': tf.Variable(tf.random_normal([ir.N_INPUT * 4, 2048])),
+    'wd2': tf.Variable(tf.random_normal([2048, 1024])),
+    'out': tf.Variable(tf.random_normal([1024, N_CLASSES]))
 }
 
 biases = {
-	'bc1': tf.Variable(tf.random_normal([32])),
-	'bc2': tf.Variable(tf.random_normal([64])),
-	'bd1': tf.Variable(tf.random_normal([2048])),
-	'bd2': tf.Variable(tf.random_normal([1024])),
-	'out': tf.Variable(tf.random_normal([N_CLASSES]))
+    'bc1': tf.Variable(tf.random_normal([32])),
+    'bc2': tf.Variable(tf.random_normal([64])),
+    'bd1': tf.Variable(tf.random_normal([2048])),
+    'bd2': tf.Variable(tf.random_normal([1024])),
+    'out': tf.Variable(tf.random_normal([N_CLASSES]))
 }
 
 x = tf.placeholder(tf.float32, [None, ir.N_INPUT])
@@ -68,35 +68,35 @@ init = tf.initialize_all_variables()
 saver = tf.train.Saver()
 
 with tf.Session() as sess:
-	sess.run(init)
-	step = 1
-	while step * batch_size < training_iters:
-		batch_x, batch_y = vnist.train.next_batch(batch_size)
-		batch_x = batch_x.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1])
-		sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: CNN_DROPOUT})
-		if step % display_step == 0:
-			loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
-			print "Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
-				"{:.6f}".format(loss) + ", Training Accuracy= " + \
-				"{:.5f}".format(acc)
-		step += 1
-	print "Optimization Finished!"
-	save_path = saver.save(sess, MODEL_PATH)
-	print "Model saved in file: %s" % save_path
+    sess.run(init)
+    step = 1
+    while step * batch_size < training_iters:
+        batch_x, batch_y = vnist.train.next_batch(batch_size)
+        batch_x = batch_x.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1])
+        sess.run(optimizer, feed_dict={x: batch_x, y: batch_y, keep_prob: CNN_DROPOUT})
+        if step % display_step == 0:
+            loss, acc = sess.run([cost, accuracy], feed_dict={x: batch_x, y: batch_y, keep_prob: 1.})
+            print "Iter " + str(step * batch_size) + ", Minibatch Loss= " + \
+                "{:.6f}".format(loss) + ", Training Accuracy= " + \
+                "{:.5f}".format(acc)
+        step += 1
+    print "Optimization Finished!"
+    save_path = saver.save(sess, MODEL_PATH)
+    print "Model saved in file: %s" % save_path
 
-	print "Testing Accuracy:", \
-		sess.run(accuracy, feed_dict={
-			x: vnist.test.images.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1]),
-			y: vnist.test.labels,
-			keep_prob: 1.
-		})
+    print "Testing Accuracy:", \
+        sess.run(accuracy, feed_dict={
+            x: vnist.test.images.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1]),
+            y: vnist.test.labels,
+            keep_prob: 1.
+        })
 
 # with tf.Session() as sess:
-# 	# sess.run(init)
-# 	saver.restore(sess, MODEL_PATH)
-# 	print "Testing Accuracy:", \
-# 		accuracy.eval(feed_dict={
-# 			x: vnist.test.images.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1]),
-# 			y: vnist.test.labels,
-# 			keep_prob: 1.
-# 		})
+#     # sess.run(init)
+#     saver.restore(sess, MODEL_PATH)
+#     print "Testing Accuracy:", \
+#         accuracy.eval(feed_dict={
+#             x: vnist.test.images.reshape([-1, ir.IMAGE_SIZE, ir.IMAGE_SIZE, 1]),
+#             y: vnist.test.labels,
+#             keep_prob: 1.
+#         })

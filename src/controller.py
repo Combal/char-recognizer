@@ -10,15 +10,15 @@ temp_file_mod = 'data/temp_file_mod.jpg'
 
 @app.route('/', methods=['GET', 'POST'])
 def recognize():
-	if request.method == 'POST':
-		with open(temp_file, 'w') as f:
-			f.write(request.data)
-		img = ir.read_and_transform(temp_file)
-		cv2.imwrite(temp_file_mod, img)
-		return recognizer.recognize(temp_file_mod)
-	else:
-		return render_template("index.html")
+    if request.method == 'POST':
+        with open(temp_file, 'w') as f:
+            f.write(request.data)
+        img = ir.read_and_transform(temp_file)
+        cv2.imwrite(temp_file_mod, img)
+        return recognizer.recognize(temp_file_mod)
+    else:
+        return render_template("index.html")
 
 if __name__ == '__main__':
-	recognizer = Recognizer()
-	app.run(host='0.0.0.0', port=8008, threaded=False)
+    recognizer = Recognizer()
+    app.run(host='0.0.0.0', port=8008, threaded=False)
