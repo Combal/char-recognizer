@@ -8,6 +8,7 @@ import argparse
 import numpy as np
 import src.vnist as vnist
 from src.network import init_model
+import sys
 
 nb_classes = 39
 input_shape = [56, 56, 1]
@@ -62,6 +63,7 @@ class Recognizer:
         elif char == 'r':
             char = u'რ'
         print("%d - %s" % (pred[0], char))
+        sys.stdout.flush()
         return char
 
 if __name__ == '__main__':
