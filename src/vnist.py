@@ -4,9 +4,11 @@ import os
 import src.image_reader as ir
 import numpy as np
 from tensorflow.contrib.learn.python.learn.datasets import base
+import pickle
 
+DATASET_FILE = 'data/dataset.pkl'
 VALIDATION_RATE = 0
-TEST_RATE = 0.10
+TEST_RATE = 0.20
 
 
 def list_eye(n):
@@ -48,30 +50,40 @@ def read_data_sets(train_dir):
 
 
 def read_from_folder(folder):
-    categories = os.listdir(folder)
-    images = []
-    labels = []
-    for label in categories:
-        # print os.path.join(DIR, categories[i])
-        label_dir = os.path.join(folder, label)
-        if not os.path.isdir(label_dir):
-            continue
-        # print label, get_label_vector(label)
-        image_list = os.listdir(label_dir)
-        for image in image_list:
-            image_path = os.path.join(label_dir, image)
-            # print image_path
-            image_rec = ir.read_and_transform(image_path)
-            if image_rec is None:
+    if os.path.exists(DATASET_FILE):
+        with open(DATASET_FILE, 'rb') as f:
+            return pickle.load(f)
+    if os.path.exists(folder):
+        categories = os.listdir(folder)
+        images = []
+        labels = []
+        for label in categories:
+            # print os.path.join(DIR, categories[i])
+            label_dir = os.path.join(folder, label)
+            if not os.path.isdir(label_dir):
                 continue
-            images.append(image_rec)
-            labels.append(get_label_vector(label.decode('utf-8')))
-        # print label
-        # print get_label_vector(label)
-        # self._data.append((image_rec, label, self.get_label_vector(label)))
-    images = np.array(images)
-    labels = np.array(labels)
-    return images, labels
+            # print label, get_label_vector(label)
+            image_list = os.listdir(label_dir)
+            for image in image_list:
+                image_path = os.path.join(label_dir, image)
+                # print image_path
+                image_rec = ir.read_and_transform(image_path)
+                if image_rec is None:
+                    continue
+                images.append(image_rec)
+                labels.append(get_label_vector(label))
+            # print label
+            # print get_label_vector(label)
+            # self._data.append((image_rec, label, self.get_label_vector(label)))
+        images = np.array(images)
+        labels = np.array(labels)
+        with open(DATASET_FILE, 'wb') as f:
+            pickle.dump((images, labels), f)
+        return images, labels
+    import urllib.request
+    urllib.request.urlretrieve('https://drive.google.com/uc?id=1-AFAp5UcIiuKlL9YCxa1xhiOLSNq8X7O&export=download', DATASET_FILE)
+    with open(DATASET_FILE, 'rb') as f:
+        return pickle.load(f)
 
 
 class DataSet:
@@ -122,3 +134,9 @@ class DataSet:
             assert batch_size <= self._num_examples
         end = self._index_in_epoch
         return self._images[start:end], self._labels[start:end]
+
+
+if __name__ == '__main__':
+    i, l = read_from_folder('data/train_images')
+    print(i.shape)
+    print(l.shape)

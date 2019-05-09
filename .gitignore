@@ -26,3 +26,4 @@ fabric.properties
 
 /data/
 /logs/
+/venv

@@ -4,11 +4,17 @@ char recognizer for georgian letters, implemented on python using tensorflow bas
 
 ## Requirements
 
+python 3.6
+
 - numpy
-- openCV
-- Flask
+- flask>=0.12.2
+- flask_restplus>=0.10.1
+- requests>=2.18.4
+- Pillow>=4.1.1
 - keras
-- PIL
+- opencv-python<4
+- tensorflow
+
 
 ## Run
 

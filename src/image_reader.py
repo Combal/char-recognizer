@@ -12,8 +12,8 @@ IMAGE_PADDING = int(round(IMAGE_SIZE * 0.2))
 
 
 def get_global_bounding_rect(contours):
-    min_x = sys.maxint
-    min_y = sys.maxint
+    min_x = sys.maxsize
+    min_y = sys.maxsize
     max_w = 0
     max_h = 0
     for c in contours:
@@ -31,7 +31,7 @@ def get_global_bounding_rect(contours):
 
 def crop_image(img):
     img2 = copy.copy(img)
-    image, contours, hierarchy = cv2.findContours(img2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, hierarchy = cv2.findContours(img2, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     x1, y1, x2, y2 = get_global_bounding_rect(contours)
     del img2
     return img[y1:y2, x1:x2]

@@ -1,6 +1,7 @@
 import src.vnist as vnist
 from src.network import init_model
 from keras.callbacks import TensorBoard
+import time
 
 nb_classes = 39
 nb_epoch = 24
@@ -34,9 +35,9 @@ model.compile(loss='categorical_crossentropy', optimizer='adadelta', metrics=['a
 callback = TensorBoard(log_dir='./logs', histogram_freq=0, write_graph=True, write_images=True)
 
 model.fit(X_train, Y_train, batch_size=batch_size, epochs=nb_epoch,
-        verbose=1, validation_split=0.1, callbacks=[callback])
+        verbose=1, validation_split=0.2, callbacks=[callback])
 
 score = model.evaluate(X_test, Y_test, verbose=0)
 print('test score: ', score[0])
 print('test accuracy: ', score[1])
-model.save_weights('data/model.h5')
+model.save_weights('data/model-{}.h5'.format(time.time()))
