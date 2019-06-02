@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import os
-import src.image_reader as ir
+from src import image_utils
 import numpy as np
 from tensorflow.contrib.learn.python.learn.datasets import base
 import pickle
+import cv2
 
 DATASET_FILE = 'data/dataset.pkl'
 VALIDATION_RATE = 0
@@ -16,14 +16,28 @@ def list_eye(n):
 
 
 y = list_eye(39)
-# labels_string = "აბგ"
-labels_string = u"აბგდdეeვvზთიკლlმნოoპჟრrსტუფქღყშჩცძწჭხჯჰ"
+labels_string = "აბგდdეeვvზთიკლlმნოoპჟრrსტუფქღყშჩცძწჭხჯჰ"
 
 
 def get_label_vector(l):
-    # if l in labels_string:
     return y[labels_string.index(l)]
-    # return None
+
+
+def get_label(pred):
+    char = labels_string[pred]
+    if char == 'd':
+        char = 'დ'
+    elif char == 'e':
+        char = 'ე'
+    elif char == 'v':
+        char = 'ვ'
+    elif char == 'l':
+        char = 'ლ'
+    elif char == 'o':
+        char = 'ო'
+    elif char == 'r':
+        char = 'რ'
+    return char
 
 
 def read_data_sets(train_dir):
@@ -67,7 +81,8 @@ def read_from_folder(folder):
             for image in image_list:
                 image_path = os.path.join(label_dir, image)
                 # print image_path
-                image_rec = ir.read_and_transform(image_path)
+                img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+                image_rec = image_utils.transform(img)
                 if image_rec is None:
                     continue
                 images.append(image_rec)
@@ -81,7 +96,8 @@ def read_from_folder(folder):
             pickle.dump((images, labels), f)
         return images, labels
     import urllib.request
-    urllib.request.urlretrieve('https://drive.google.com/uc?id=1-AFAp5UcIiuKlL9YCxa1xhiOLSNq8X7O&export=download', DATASET_FILE)
+    urllib.request.urlretrieve('https://drive.google.com/uc?id=1-AFAp5UcIiuKlL9YCxa1xhiOLSNq8X7O&export=download',
+                               DATASET_FILE)
     with open(DATASET_FILE, 'rb') as f:
         return pickle.load(f)
 

@@ -10,8 +10,9 @@ import src.vnist as vnist
 from src.network import init_model
 import sys
 
+MODEL = 'data/models/model.h5'
 nb_classes = 39
-input_shape = [56, 56, 1]
+input_shape = (56, 56, 1)
 
 
 def init_arguments():
@@ -33,40 +34,26 @@ class Recognizer:
 
     def __init__(self):
         self.model = init_model(nb_classes, input_shape=input_shape)
+        self.model.load_weights(MODEL)
         # model.summary()
-        self.model.load_weights('data/model.h5')
 
-    def recognize(self, image_path):
-        img = Image.open(image_path)
-        img = img.convert("L")
-        array = np.asarray(img.getdata(), dtype=np.float32)
-        if __name__ == '__main__':
-            array = 255 - array
+    def recognize(self, img):
+        array = np.asarray(img, dtype=np.float32)
+
         array /= 255.0
         array = array.reshape(input_shape)
+        array = np.expand_dims(array, 0)
         # print(array.shape)
 
-        array = np.expand_dims(array, 0)
-
         pred = self.model.predict_classes(array, batch_size=1, verbose=0)
-        char = vnist.labels_string[pred[0]]
-        if char == 'd':
-            char = u'დ'
-        elif char == 'e':
-            char = u'ე'
-        elif char == 'v':
-            char = u'ვ'
-        elif char == 'l':
-            char = u'ლ'
-        elif char == 'o':
-            char = u'ო'
-        elif char == 'r':
-            char = u'რ'
-        print("%d - %s" % (pred[0], char))
-        sys.stdout.flush()
+        char = vnist.get_label(pred[0])
+
+        print("{} - {}".format(pred[0], char), flush=True)
         return char
 
+
 if __name__ == '__main__':
+    #     array = 255 - array
     args = init_arguments()
     recognizer = Recognizer()
     recognizer.recognize(args.image)

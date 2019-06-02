@@ -1,7 +1,8 @@
 from flask import Flask, request, render_template
 from src.recognizer import Recognizer
-import src.image_reader as ir
+from src import image_utils
 import cv2
+import numpy as np
 
 app = Flask(__name__)
 temp_file = 'data/temp_file.jpg'
@@ -13,9 +14,10 @@ def recognize():
     if request.method == 'POST':
         with open(temp_file, 'wb') as f:
             f.write(request.data)
-        img = ir.read_and_transform(temp_file)
+        img = cv2.imdecode(np.asarray(bytearray(request.data), dtype="uint8"), cv2.IMREAD_GRAYSCALE)
+        img = image_utils.transform(img)
         cv2.imwrite(temp_file_mod, img)
-        return recognizer.recognize(temp_file_mod)
+        return recognizer.recognize(img)
     else:
         return render_template("index.html")
 
