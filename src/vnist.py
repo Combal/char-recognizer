@@ -1,21 +1,19 @@
 #!/usr/bin/env python
 import os
-from src import image_utils
+import pickle
+
+import cv2
 import numpy as np
 from tensorflow.contrib.learn.python.learn.datasets import base
-import pickle
-import cv2
+
+from src import image_utils
 
 DATASET_FILE = 'data/dataset.pkl'
 VALIDATION_RATE = 0
 TEST_RATE = 0.20
 
 
-def list_eye(n):
-    return np.eye(n).tolist()
-
-
-y = list_eye(39)
+y = np.eye(39).tolist()
 labels_string = "აბგდdეeვvზთიკლlმნოoპჟრrსტუფქღყშჩცძწჭხჯჰ"
 
 
@@ -72,24 +70,20 @@ def read_from_folder(folder):
         images = []
         labels = []
         for label in categories:
-            # print os.path.join(DIR, categories[i])
             label_dir = os.path.join(folder, label)
             if not os.path.isdir(label_dir):
                 continue
-            # print label, get_label_vector(label)
             image_list = os.listdir(label_dir)
             for image in image_list:
                 image_path = os.path.join(label_dir, image)
-                # print image_path
                 img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
                 image_rec = image_utils.transform(img)
                 if image_rec is None:
+                    print("skipping image {}".format(image_path))
                     continue
                 images.append(image_rec)
                 labels.append(get_label_vector(label))
-            # print label
-            # print get_label_vector(label)
-            # self._data.append((image_rec, label, self.get_label_vector(label)))
+
         images = np.array(images)
         labels = np.array(labels)
         with open(DATASET_FILE, 'wb') as f:
@@ -104,11 +98,9 @@ def read_from_folder(folder):
 
 class DataSet:
     def __init__(self, images, labels):
-        assert images.shape[0] == labels.shape[0], (
-            'images.shape: %s labels.shape: %s' % (images.shape, labels.shape)
-        )
+        assert images.shape[0] == labels.shape[0], \
+            ('images.shape: {} labels.shape: {}'.format(images.shape, labels.shape))
         self._num_examples = images.shape[0]
-        # assert images.shape[3] == 1
         images = images.reshape(images.shape[0], images.shape[1] * images.shape[2])
         images = images.astype(np.float32)
         images = np.multiply(images, 1.0 / 255.0)

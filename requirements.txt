@@ -5,4 +5,5 @@ requests>=2.18.4
 Pillow>=4.1.1
 keras
 opencv-python<4
-tensorflow
+tensorflow==1.7
+tensorflow-gpu==1.7

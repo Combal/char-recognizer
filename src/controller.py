@@ -15,7 +15,9 @@ def recognize():
         with open(temp_file, 'wb') as f:
             f.write(request.data)
         img = cv2.imdecode(np.asarray(bytearray(request.data), dtype="uint8"), cv2.IMREAD_GRAYSCALE)
-        img = image_utils.transform(img)
+        # img = image_utils.transform(img)
+        img = 255 - img
+        img = cv2.resize(img, (56, 56))
         cv2.imwrite(temp_file_mod, img)
         return recognizer.recognize(img)
     else:

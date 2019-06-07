@@ -1,7 +1,6 @@
 from cv2 import cv2
 import numpy as np
 import math
-import copy
 import sys
 
 IMAGE_SIZE = 56
@@ -39,17 +38,17 @@ def transform(img):
 def get_squared_with_padding(img):
     rows, cols = img.shape
     if rows == 0:
-        print("skipping image {}".format(image_path))
         return None
 
     a, b = (rows, cols) if rows > cols else (cols, rows)
     factor = (IMAGE_SIZE - IMAGE_PADDING) / (a * 1.0)
     a = IMAGE_SIZE - IMAGE_PADDING
     b = int(round(b * factor))
-    img = cv2.resize(img, (b, a))
+    img = cv2.resize(img, (b, a) if rows > cols else (a, b))
 
-    cols_padding = (int(math.ceil((IMAGE_SIZE - b) / 2.0)), int(math.floor((IMAGE_SIZE - b) / 2.0)))
-    rows_padding = (int(math.ceil((IMAGE_SIZE - a) / 2.0)), int(math.floor((IMAGE_SIZE - a) / 2.0)))
+    a_padding = (int(math.ceil((IMAGE_SIZE - b) / 2.0)), int(math.floor((IMAGE_SIZE - b) / 2.0)))
+    b_padding = (int(math.ceil((IMAGE_SIZE - a) / 2.0)), int(math.floor((IMAGE_SIZE - a) / 2.0)))
+    rows_padding, cols_padding = (b_padding, a_padding) if rows > cols else (a_padding, b_padding)
     img = np.lib.pad(img, (rows_padding, cols_padding), 'constant')
     return img
 

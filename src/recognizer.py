@@ -1,16 +1,13 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 
-from PIL import Image
 import argparse
 
 import numpy as np
+
 import src.vnist as vnist
 from src.network import init_model
-import sys
 
-MODEL = 'data/models/model.h5'
+MODEL = 'data/models/model-1559506571.3370159.h5'
 nb_classes = 39
 input_shape = (56, 56, 1)
 
