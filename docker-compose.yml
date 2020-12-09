@@ -1,12 +1,22 @@
-version: "3"
+version: "2.3"
 services:
-  flask:
-      build:
-          context: .
-#          args:
-#            HTTP_PROXY: http://proxy1.mia.gov.ge:3128
-#            HTTPS_PROXY: http://proxy1.mia.gov.ge:3128
-      container_name: char-recognizer
-      image: char-recognizer
-      ports:
-        - 8008:8008
+#  flask:
+#      build:
+#          context: .
+##          args:
+##            HTTP_PROXY: http://proxy1.mia.gov.ge:3128
+##            HTTPS_PROXY: http://proxy1.mia.gov.ge:3128
+#      container_name: char-recognizer
+#      image: char-recognizer
+#      ports:
+#        - 8008:8008
+
+  cuda:
+    build: .
+    image: char-recognizer
+    runtime: nvidia
+    ports:
+      - 8008:8008
+#    volumes:
+#      - ./:/app
+#    command: sleep 3600

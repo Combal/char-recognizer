@@ -27,3 +27,4 @@ fabric.properties
 /data/
 /logs/
 /venv
+.ipynb_checkpoints/
